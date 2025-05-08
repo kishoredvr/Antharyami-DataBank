@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antharyami Data Bank</title>
+    <title>Google Sheets Data Viewer</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
@@ -13,12 +13,10 @@
         .search-box { width: 90%; padding: 5px; margin: 2px; }
         .error { color: red; }
         .loading { color: #666; }
-        h1 { color: #333; }
     </style>
 </head>
 <body>
-    <h1>Antharyami Data Bank</h1>
-    <button onclick="loadData(true)">Refresh Data</button>
+    <button onclick="loadData()">Load Data</button>
     <div id="status"></div>
     <div id="table-container"></div>
 
@@ -26,19 +24,7 @@
         // REPLACE WITH YOUR SHEET'S EXCEL EXPORT URL
         const EXCEL_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSRmpidryznLtEuGt1_FvHpfcM22HDIIfQHYixnBHFeWqLadHAtaxZAt6-8N0ZTI3gGWHLBT7UanaGa/pub?output=xlsx";
 
-        // Load cached data on page load
-        window.onload = function() {
-            const cachedData = localStorage.getItem('sheetData');
-            if (cachedData) {
-                const { headers, rows } = JSON.parse(cachedData);
-                renderTable(headers, rows);
-                document.getElementById("status").innerHTML = "Showing cached data. Click 'Refresh Data' to update.";
-            } else {
-                loadData(false);
-            }
-        };
-
-        async function loadData(forceRefresh) {
+        async function loadData() {
             try {
                 document.getElementById("status").className = "loading";
                 document.getElementById("status").innerHTML = "Loading data...";
@@ -58,25 +44,14 @@
                 const headers = jsonData[0];
                 const rows = jsonData.slice(1);
                 
-                // Store data in localStorage
-                localStorage.setItem('sheetData', JSON.stringify({ headers, rows }));
-                
                 // 4. Render table
                 renderTable(headers, rows);
-                document.getElementById("status").innerHTML = forceRefresh ? "Data refreshed successfully!" : "";
+                document.getElementById("status").innerHTML = "";
 
             } catch (error) {
                 document.getElementById("status").className = "error";
                 document.getElementById("status").innerHTML = `Error: ${error.message}`;
                 console.error("Full error:", error);
-                
-                // If refresh fails, try to show cached data
-                const cachedData = localStorage.getItem('sheetData');
-                if (cachedData) {
-                    const { headers, rows } = JSON.parse(cachedData);
-                    renderTable(headers, rows);
-                    document.getElementById("status").innerHTML += "<br>Showing cached data instead.";
-                }
             }
         }
 
@@ -108,6 +83,9 @@
                 row.style.display = cellText.includes(term) ? "" : "none";
             });
         }
+
+        // Load data on startup
+        loadData();
     </script>
 </body>
 </html>
