@@ -21,81 +21,105 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            font-size: 2.2em;
+            letter-spacing: 1px;
         }
         .container {
-            max-width: 1200px;
-            margin: 20px auto;
+            max-width: 1400px;
+            margin: 30px auto;
             padding: 0 20px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             background-color: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin: 20px 0;
         }
         th, td {
             padding: 12px 15px;
-            border: 1px solid #ddd;
+            border: 1px solid #e0e0e0;
             text-align: left;
+            font-size: 0.95em;
         }
         th {
             background-color: #3498db;
             color: white;
             position: sticky;
             top: 78px;
+            font-weight: 600;
         }
         tr:nth-child(even) {
             background-color: #f8f9fa;
         }
         .search-box {
             width: 100%;
-            padding: 8px;
+            padding: 8px 12px;
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
+            font-size: 0.9em;
         }
         #status {
             text-align: center;
             padding: 20px;
             color: #666;
+            font-size: 1.1em;
         }
         .error {
             color: #e74c3c;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+            th, td {
+                padding: 10px;
+                font-size: 0.85em;
+            }
+            h1 {
+                font-size: 1.8em;
+                padding: 20px 0;
+            }
         }
     </style>
 </head>
 <body>
     <h1>Antharyami Data Bank</h1>
     <div class="container">
-        <div id="status" class="loading">Loading data...</div>
+        <div id="status" class="loading">Loading data from GitHub...</div>
         <div id="table-container"></div>
     </div>
 
     <script>
-        // Replace with your actual GitHub JSON file URL (raw content link)
-        const JSON_URL = "https://github.com/kishoredvr/Antharyami-DataBank/blob/main/Astro%20Data%20Bank.json";
+        // Correct raw JSON URL
+        const JSON_URL = "https://raw.githubusercontent.com/kishoredvr/Antharyami-DataBank/main/Astro%20Data%20Bank.json";
 
         async function loadData() {
             try {
                 const response = await fetch(JSON_URL);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 
                 const data = await response.json();
-                if (!Array.isArray(data) || data.length === 0) throw new Error("Invalid or empty JSON data");
+                if (!Array.isArray(data) || data.length === 0) throw new Error("Empty dataset");
                 
-                // Extract headers from the first object
+                // Extract headers from first object
                 const headers = Object.keys(data[0]);
                 
-                // Create rows array
-                const rows = data.map(item => headers.map(header => item[header]));
-                
+                // Process rows
+                const rows = data.map(item => headers.map(header => {
+                    const value = item[header];
+                    return (typeof value === 'object') ? JSON.stringify(value) : value;
+                }));
+
                 renderTable(headers, rows);
-                document.getElementById("status").innerHTML = `Loaded ${data.length} records`;
+                document.getElementById("status").innerHTML = `Successfully loaded ${data.length} records`;
 
             } catch (error) {
                 document.getElementById("status").className = "error";
-                document.getElementById("status").innerHTML = `Error loading data: ${error.message}`;
-                console.error("Fetch error:", error);
+                document.getElementById("status").innerHTML = `Error: ${error.message}`;
+                console.error("Loading failed:", error);
             }
         }
 
@@ -105,7 +129,8 @@
                 <th>
                     <input class="search-box" 
                            placeholder="Filter ${header}" 
-                           oninput="filterColumn(${index}, this.value)">
+                           oninput="filterColumn(${index}, this.value)"
+                           aria-label="Filter by ${header}">
                 </th>
             `).join('');
 
@@ -119,7 +144,7 @@
                     <tbody>
                         ${rows.map(row => `
                             <tr>${row.map(cell => `
-                                <td>${typeof cell === 'string' ? cell : JSON.stringify(cell)}</td>
+                                <td>${cell || '-'}</td>
                             `).join('')}</tr>
                         `).join('')}
                     </tbody>
