@@ -5,40 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Antharyami Data Bank</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .search-box { width: 90%; padding: 5px; margin: 2px; }
-        .error { color: red; }
-        .loading { color: #666; }
-        h1 { color: #333; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 { 
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+        }
+        th, td { 
+            padding: 12px 15px; 
+            border: 1px solid #ddd; 
+            text-align: left;
+        }
+        th { 
+            background-color: #f2f2f2;
+            position: sticky;
+            top: 0;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .search-box { 
+            width: 90%; 
+            padding: 8px; 
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .error { 
+            color: red; 
+            padding: 10px;
+            text-align: center;
+        }
+        .loading { 
+            color: #666; 
+            padding: 10px;
+            text-align: center;
+        }
+        #status {
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
     <h1>Antharyami Data Bank</h1>
-    <button onclick="loadData()">Refresh Data</button>
     <div id="status"></div>
     <div id="table-container"></div>
 
     <script>
-        // Replace with your GitHub JSON file URL (raw content link)
-        const JSON_URL = "https://raw.githubusercontent.com/yourusername/yourrepo/main/Astro Data Bank.json";
+        // This is the JSON data we'll use directly since it's included in the file
+        const jsonData = [{"Name":"A. A. Gill","Gender":"Male","Date":19901.0,"Time":0.8298611111111112,"Lognitude":3.188,"Latitude":55.95,"Time Zone":"+01:00:00","Location":"Edinburgh,  United Kingdom, , ","Rating":"{'rodden': 'AA'}","Notes":"Adrian Anthony Gill (28 June 1954 â€" 10 December 2016) was a British writer, best known for writing about food and travel, and for his work in television. Publications he contributed to included The Sunday Times, wrote for Vanity Fair, GQ, and Esquire, and he also published numerous books.\r\nAfter failing to establish himself as an artist, Gill wrote his first piece for Tatler in 1991 and joined The Sunday Times in 1993.\r\nKnown for his sharp wit, and often controversial style, Gill was widely read and won numerous awards for his writing. On his death he was described by one editor as \"a giant among journalists.\" His articles were the subject of numerous complaints to the Press Complaints Commission."},{"Name":"A. J. Antoon","Gender":"Male","Date":16413.0,"Time":0.5798611111111112,"Lognitude":71.162,"Latitude":42.708,"Time Zone":"-04:00:00","Location":"Lawrence,  MA,  United States, ","Rating":"{'rodden': 'AA'}","Notes":"A. J. Antoon (December 7, 1944 â€" January 22, 1992) was an American theatre director. He attended the Yale School of Drama. Beginning in 1971, Antoon directed numerous plays at the New York Shakespeare Festival over a period of nearly 20 years. In 1973, Antoon became one of the few directors to have been nominated for two Tony Awards in the same category in the same year. In addition to winning the Tony Award with one of his nominations, Antoon was also the winner of a Drama Desk Award, a New York Drama Critics' Circle Award, and an Obie Award. His career lasted until 1991; he died less than a year later from AIDS-related lymphoma."},{"Name":"A. J. Cronin","Gender":"Male","Date":"19-07-1896","Time":0.15625,"Lognitude":4.653,"Latitude":55.963,"Time Zone":"+00:00:00","Location":"Cardross,  Dumbarton,  United Kingdom, ","Rating":"{'rodden': 'AA'}","Notes":"Archibald Joseph Cronin (19 July 1896 â€" 6 January 1981) was a Scottish physician and novelist. His best-known novel is The Citadel (1937), about a Scottish physician who serves in a Welsh mining village before achieving success in London, where he becomes disillusioned about the venality and incompetence of some doctors. Cronin knew both areas, as a medical inspector of mines and as a physician in Harley Street. The book exposed unfairness and malpractice in British medicine and helped to inspire the National Health Service.\r\nThe Stars Look Down, set in the North East of England, is another of his best-selling novels inspired by his work among miners. Both novels have been filmed, as have Hatter's Castle, The Keys of the Kingdom and The Green Years. His 1935 novella Country Doctor inspired a long-running BBC radio and TV series, Dr. Finlay's Casebook (1962â€"1971), set in the 1920s. There was a follow-up series in 1993â€"1996."},{"Name":"A. J. Foyt","Gender":"Male","Date":12800.0,"Time":0.059027777777777776,"Lognitude":95.37,"Latitude":29.761,"Time Zone":"-06:00:00","Location":"Houston,  TX,  United States, ","Rating":"{'rodden': 'AA'}","Notes":null},{"Name":"A. Spencer Paterson","Gender":"Male","Date":53.0,"Time":0.9375,"Lognitude":2.095,"Latitude":57.147,"Time Zone":"+00:00:00","Location":"Aberdeen,  United Kingdom, , ","Rating":"{'rodden': 'AA'}","Notes":"Anthony Joseph Foyt Jr. (born January 16, 1935) is an American former racing driver who competed in numerous disciplines of motorsport. He is best known for his open wheel racing career, and for becoming the first four-time winner of the Indianapolis 500. He holds the most American National Championship titles in history, winning seven.\r\nFoyt competed in United States Automobile Club (USAC) Championship cars, sprint cars and midget cars. He raced stock cars in NASCAR and USAC. He won several major sports car racing events. He holds the USAC career wins record with 159 victories, and the Indy car racing career wins record with 67.\r\nFoyt is the only driver to have won the Indianapolis 500, the 24 Hours of Le Mans, the Daytona 500, and the 24 Hours of Daytona. In the NASCAR stock car circuit, Foyt won seven times, including the 1964 Firecracker 400 and the 1972 Daytona 500. He survived three major crashes that caused serious injuries and narrowly escaped a fourth. Foyt's success has led to induction into numerous motorsports halls of fame.\r\nIn the mid-1960s, Foyt became a team owner, fielding cars for himself and other drivers. Since retiring from active race driving, he has owned A. J. Foyt Enterprises, which has fielded teams in CART, the IndyCar Series, and NASCAR."},{"Name":"Aaron Eckhart","Gender":"Male","Date":24909.0,"Time":0.7847222222222222,"Lognitude":122.16,"Latitude":37.445,"Time Zone":"-08:00:00","Location":"Palo Alto,  CA,  United States, ","Rating":"{'rodden': 'AA'}","Notes":"Aaron Edward Eckhart (born March 12, 1968) is an American actor. Born in Cupertino, California, Eckhart moved to the United Kingdom at an early age. He began his acting career by performing in school plays, before moving to Australia for his high school senior year. He left high school without graduating, but earned a diploma through a professional education course, and then graduated from Brigham Young University (BYU) in Provo, Utah, in 1994 with a Bachelor of Fine Arts  degree in film.\r\nAs an undergraduate at BYU, Eckhart met director and writer Neil LaBute, who cast Eckhart in several of LaBute's original plays. Five years later Eckhart made a debut as an unctuous, sociopathic womanizer in LaBute's black comedy film In the Company of Men (1997), followed by appearances in three more of the director's films.\r\nEckhart gained wide recognition as George in Erin Brockovich (2000), and, in 2006, he received a Golden Globe nomination for his portrayal of Nick Naylor in Thank You for Smoking. In 2008 he played a major role in Christopher Nolan's blockbuster Batman film The Dark Knight as District Attorney Harvey Dent / Two-Face.\r\nHe went on to appear in Love Happens, Rabbit Hole, Battle: Los Angeles, The Rum Diary, Olympus Has Fallen and its sequel, I, Frankenstein, Sully, and Midway."}];
 
-        async function loadData() {
+        function loadData() {
             try {
                 document.getElementById("status").className = "loading";
                 document.getElementById("status").innerHTML = "Loading data...";
-
-                const response = await fetch(JSON_URL);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
-                const data = await response.json();
+                // Extract headers from the first object's keys
+                const headers = Object.keys(jsonData[0]);
                 
-                if (!data.headers || !data.rows) throw new Error("Invalid JSON format");
+                // Convert the data into rows
+                const rows = jsonData.map(item => {
+                    return headers.map(header => item[header]);
+                });
                 
-                renderTable(data.headers, data.rows);
-                document.getElementById("status").innerHTML = "Data loaded successfully!";
+                renderTable(headers, rows);
+                document.getElementById("status").innerHTML = `Loaded ${jsonData.length} records`;
 
             } catch (error) {
                 document.getElementById("status").className = "error";
@@ -48,18 +94,23 @@
         }
 
         function renderTable(headers, rows) {
+            // Create search row with input boxes for each column
             const searchRow = headers.map(h => `
-                <th><input class="search-box" placeholder="Search ${h}" 
+                <th><input class="search-box" placeholder="Filter ${h}" 
                           oninput="filterColumn(${headers.indexOf(h)}, this.value)">
                 </th>
             `).join("");
             
+            // Create the table HTML
             const tableHTML = `
                 <table>
-                    <thead><tr>${searchRow}</tr></thead>
+                    <thead>
+                        <tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr>
+                        <tr>${searchRow}</tr>
+                    </thead>
                     <tbody>
                         ${rows.map(row => `
-                            <tr>${headers.map((_, i) => `<td>${row[i] || ""}</td>`).join("")}</tr>
+                            <tr>${row.map(cell => `<td>${cell || ""}</td>`).join("")}</tr>
                         `).join("")}
                     </tbody>
                 </table>
@@ -70,14 +121,19 @@
 
         function filterColumn(colIndex, searchTerm) {
             const term = searchTerm.toLowerCase();
-            document.querySelectorAll("tbody tr").forEach(row => {
-                const cellText = row.cells[colIndex].textContent.toLowerCase();
-                row.style.display = cellText.includes(term) ? "" : "none";
+            const rows = document.querySelectorAll("tbody tr");
+            
+            rows.forEach(row => {
+                const cell = row.cells[colIndex];
+                if (cell) {
+                    const cellText = cell.textContent.toLowerCase();
+                    row.style.display = cellText.includes(term) ? "" : "none";
+                }
             });
         }
 
         // Load data automatically when page opens
-        loadData();
+        window.onload = loadData;
     </script>
 </body>
 </html>
